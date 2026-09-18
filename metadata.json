@@ -1,0 +1,6 @@
+{
+  "name": "FundFlow",
+  "description": "Smart personal finance, multi-account money transfer, DPS tracker, and Khata ledger manager",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

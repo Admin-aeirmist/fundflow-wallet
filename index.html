@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>FundFlow - ক্লাউড ও গুগল শিট কানেক্টেড ফাইন্যান্স ম্যানেজার</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-subtle: #eef2ff;
+      --primary-glow: rgba(79, 70, 229, 0.15);
+      --success: #059669;
+      --success-subtle: #ecfdf5;
+      --danger: #e11d48;
+      --danger-subtle: #fff1f2;
+      --warning: #d97706;
+      --warning-subtle: #fffbeb;
+      --cloud-blue: #0284c7;
+      --cloud-hover: #0369a1;
+      --sheet-green: #107c41;
+      --sheet-hover: #0b5c30;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: clamp(12px, 2vw, 16px);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.03);
+      --shadow-hover: 0 14px 28px -4px rgba(79, 70, 229, 0.12);
+      --shadow-modal: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Hind Siliguri', 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: clamp(12px, 2vw, 24px);
+      min-height: 100vh;
+      background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      font-size: clamp(13.5px, 1.1vw, 15px);
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header.app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: clamp(14px, 2vw, 22px);
+      padding: clamp(12px, 2vw, 18px);
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: clamp(38px, 4.5vw, 44px);
+      height: clamp(38px, 4.5vw, 44px);
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      flex-shrink: 0;
+    }
+
+    .brand-title h1 {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .brand-title p {
+      font-size: clamp(11.5px, 1.2vw, 13px);
+      color: var(--muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .edit-mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: #f1f5f9;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: clamp(11.5px, 1.1vw, 13px);
+      font-weight: 600;
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+
+    .edit-mode-toggle:hover { background: #e2e8f0; }
+
+    .edit-mode-toggle.active {
+      background: var(--danger-subtle);
+      border-color: #fecaca;
+      color: var(--danger);
+      box-shadow: 0 2px 8px rgba(225, 29, 72, 0.15);
+    }
+
+    .switch-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #94a3b8;
+      transition: all 0.2s;
+    }
+
+    .edit-mode-toggle.active .switch-indicator {
+      background: var(--danger);
+      box-shadow: 0 0 6px rgba(225, 29, 72, 0.7);
+    }
+
+    .reset-app-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #fee2e2;
+      color: var(--danger);
+      border-radius: 30px;
+      border: 1px solid #fca5a5;
+      cursor: pointer;
+      font-size: clamp(11.5px, 1.1vw, 13px);
+      font-weight: 600;
+    }
+
+    body.edit-mode-active .reset-app-btn { display: inline-flex; }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(10px, 2vw, 16px);
+      margin-bottom: clamp(14px, 2vw, 22px);
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: clamp(14px, 2vw, 22px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 100px;
+      transition: all 0.25s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+      border-color: #cbd5e1;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4.5px; height: 100%;
+      background: var(--accent, var(--primary));
+    }
+
+    .stat-info { flex: 1; overflow: hidden; }
+
+    .stat-title {
+      font-size: clamp(11.5px, 1.1vw, 13px);
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stat-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(18px, 2.5vw, 26px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 2px;
+    }
+
+    .stat-sub {
+      font-size: clamp(10px, 0.9vw, 11.5px);
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stat-icon-wrap {
+      width: clamp(38px, 4vw, 46px);
+      height: clamp(38px, 4vw, 46px);
+      border-radius: 12px;
+      background: var(--icon-bg, var(--primary-subtle));
+      color: var(--accent, var(--primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-left: 10px;
+    }
+
+    .accounts-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(10px, 1.8vw, 14px) clamp(12px, 2vw, 16px);
+      margin-bottom: clamp(14px, 2vw, 22px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .accounts-header {
+      font-size: clamp(12px, 1.1vw, 13.5px);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .account-pills-list {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .acc-pill {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: clamp(11.5px, 1vw, 13px);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .acc-pill:hover {
+      background: white;
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    .acc-pill strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--primary);
+    }
+
+    .acc-del-btn {
+      color: var(--muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 2px;
+      display: none;
+    }
+
+    body.edit-mode-active .acc-del-btn { display: inline-block; }
+    .acc-del-btn:hover { color: var(--danger); }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(14px, 2vw, 22px);
+    }
+
+    @media (min-width: 920px) {
+      .main-grid { grid-template-columns: 370px 1fr; }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(16px, 2vw, 22px);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: clamp(14px, 2vw, 20px);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: clamp(15px, 1.5vw, 17px);
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .segmented-control {
+      display: flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      gap: 4px;
+    }
+
+    .seg-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 6px;
+      border-radius: 8px;
+      font-size: clamp(12px, 1.1vw, 13.5px);
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .seg-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+
+    .form-group { margin-bottom: 12px; }
+    .form-row { display: flex; gap: 8px; }
+    .form-row .form-group { flex: 1; }
+
+    label {
+      display: block;
+      font-size: clamp(11.5px, 1vw, 12.5px);
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: clamp(13px, 1.1vw, 14px);
+      color: var(--text);
+      background: #fafbfc;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 15px;
+      border-radius: 10px;
+      font-size: clamp(12.5px, 1.1vw, 13.5px);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-1.5px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #047857; }
+    .btn-secondary { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-cloud { background: var(--cloud-blue); color: white; }
+    .btn-cloud:hover { background: var(--cloud-hover); }
+    .btn-sheet { background: var(--sheet-green); color: white; }
+    .btn-sheet:hover { background: var(--sheet-hover); }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+
+    .action-group {
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    body.edit-mode-active .action-group { display: inline-flex; }
+
+    .action-btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .action-btn-icon:hover { background: var(--primary-subtle); color: var(--primary); transform: scale(1.1); }
+    .action-btn-icon.delete:hover { background: var(--danger-subtle); color: var(--danger); }
+
+    .tx-scroll { max-height: 290px; overflow-y: auto; }
+
+    .tx-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fafbfc;
+      border: 1px solid #f1f5f9;
+      margin-bottom: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tx-item:hover {
+      background: white;
+      border-color: #cbd5e1;
+      transform: translateX(2px);
+    }
+
+    .tx-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+
+    .tx-icon-circle {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .tx-details strong {
+      display: block;
+      font-size: clamp(12.5px, 1.1vw, 13.5px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+
+    .tx-meta { font-size: 11px; color: var(--muted); }
+    .tx-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .tx-amount { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(13px, 1.2vw, 14.5px); font-weight: 700; }
+
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(14px, 2vw, 18px);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+    }
+
+    .project-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .project-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .project-title-area { display: flex; align-items: center; gap: 8px; }
+    .project-title-area h3 { font-size: clamp(15px, 1.5vw, 18px); font-weight: 700; }
+
+    .proj-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #f1f5f9;
+    }
+
+    @media (min-width: 600px) {
+      .proj-stats-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .proj-stat-cell span { display: block; font-size: 11px; color: var(--muted); font-weight: 600; }
+    .proj-stat-cell strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(13px, 1.3vw, 15px); }
+
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .proj-tx-table { width: 100%; border-collapse: collapse; font-size: clamp(12px, 1.1vw, 13px); min-width: 320px; }
+    .proj-tx-table th, .proj-tx-table td { padding: 8px 10px; text-align: left; }
+    .proj-tx-table th { background: #f8fafc; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .proj-tx-table td { border-bottom: 1px solid #f1f5f9; }
+
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 12px;
+    }
+
+    .modal-box {
+      background: white;
+      width: 100%;
+      max-width: 440px;
+      border-radius: var(--radius);
+      padding: clamp(18px, 3vw, 24px);
+      box-shadow: var(--shadow-modal);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-head h3 { font-size: 16.5px; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; }
+    .modal-close:hover { color: var(--danger); }
+
+    .preview-summary {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12.5px;
+    }
+
+    .preview-summary div strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: block;
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    @media print {
+      body { background: white !important; background-image: none !important; padding: 0 !important; color: black !important; }
+      .app-header, .segmented-control, .header-actions, .accounts-section, #personalPanel, #projectPanel, #accountPanel, .modal-backdrop, .action-group, .btn, .edit-mode-toggle {
+        display: none !important;
+      }
+      .main-grid { grid-template-columns: 1fr !important; }
+      .panel, .project-card, .stat-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+      #printReportSection { display: block !important; }
+    }
+
+    #printReportSection { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-wrap">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <h1>FundFlow</h1>
+          <p>স্মার্ট ফাইন্যান্স ও প্রজেক্ট ম্যানেজার</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Edit Mood Switch -->
+        <div class="edit-mode-toggle" id="editModeBtn" onclick="toggleEditMode()" title="ক্লিক করে এডিট অপশন চালু বা বন্ধ করুন">
+          <div class="switch-indicator"></div>
+          <span id="editModeLabel">এডিট মোড: বন্ধ</span>
+        </div>
+
+        <!-- Factory Reset -->
+        <button type="button" class="reset-app-btn" onclick="factoryResetApp()" title="সকল হিসাব মুছে নতুন করে শুরু করুন">⚠️ রিসেট</button>
+
+        <!-- Google Sheets Direct Sync -->
+        <button type="button" class="btn btn-sheet btn-sm" onclick="openSheetsModal()" title="গুগল শিট সিঙ্ক পরিচালনা করুন">
+          📊 গুগল শিট
+        </button>
+
+        <!-- Cloud Sync (Direct Built-in) -->
+        <button type="button" class="btn btn-cloud btn-sm" onclick="openCloudModal()" title="গোপন পিন দিয়ে সরাসরি অনলাইন ক্লাউড সিঙ্ক করুন">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+          ☁️ ক্লাউড সিঙ্ক
+        </button>
+
+        <!-- Date-to-Date Print Button -->
+        <button type="button" class="btn btn-secondary btn-sm" onclick="openPrintModal()">🖨️ প্রিন্ট / রিপোর্ট</button>
+      </div>
+    </header>
+
+    <!-- ২টা করে ব্যালেন্স কার্ড প্রতি লাইনে -->
+    <div class="dashboard-grid">
+      <div class="stat-card" style="--accent: var(--success); --icon-bg: var(--success-subtle);">
+        <div class="stat-info">
+          <div class="stat-title">মেইন নেট ব্যালেন্স</div>
+          <div class="stat-value" id="totalNetBalance" style="color: var(--success);">৳ 0.00</div>
+          <div class="stat-sub">ব্যক্তিগত নেট + প্রজেক্ট প্রফিট</div>
+        </div>
+        <div class="stat-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+        </div>
+      </div>
+
+      <div class="stat-card" style="--accent: var(--danger); --icon-bg: var(--danger-subtle);">
+        <div class="stat-info">
+          <div class="stat-title">সর্বমোট খরচ</div>
+          <div class="stat-value" id="totalExpense" style="color: var(--danger);">৳ 0.00</div>
+          <div class="stat-sub" id="expenseSub">ব্যক্তিগত: ৳ 0 | প্রজেক্ট: ৳ 0</div>
+        </div>
+        <div class="stat-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline><polyline points="16 17 22 17 22 11"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="stat-card" style="--accent: var(--warning); --icon-bg: var(--warning-subtle);">
+        <div class="stat-info">
+          <div class="stat-title">মোট পেন্ডিং / পাওনা</div>
+          <div class="stat-value" id="totalPending" style="color: var(--warning);">৳ 0.00</div>
+          <div class="stat-sub" id="pendingSub">ব্যক্তিগত: ৳ 0 | প্রজেক্ট: ৳ 0</div>
+        </div>
+        <div class="stat-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="stat-card" style="--accent: var(--primary); --icon-bg: var(--primary-subtle);">
+        <div class="stat-info">
+          <div class="stat-title">প্রজেক্ট নিট প্রফিট / লস</div>
+          <div class="stat-value" id="totalProjectProfit" style="color: var(--primary);">৳ 0.00</div>
+          <div class="stat-sub">সরাসরি মেইন ব্যালেন্সে যুক্ত</div>
+        </div>
+        <div class="stat-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accounts Section -->
+    <div class="accounts-section">
+      <div class="accounts-header">
+        <span>💳 অ্যাকাউন্ট ভিত্তিক স্থিতি:</span>
+      </div>
+      <div class="account-pills-list" id="accountSummary"></div>
+    </div>
+
+    <div class="main-grid">
+      <!-- LEFT COLUMN -->
+      <div>
+        <div class="segmented-control">
+          <button type="button" class="seg-btn active" id="tabBtnPersonal" onclick="switchLeftTab('personal')">ব্যক্তিগত</button>
+          <button type="button" class="seg-btn" id="tabBtnProject" onclick="switchLeftTab('project')">নতুন প্রজেক্ট</button>
+          <button type="button" class="seg-btn" id="tabBtnAccount" onclick="switchLeftTab('account')">+ মাধ্যম</button>
+        </div>
+
+        <!-- 1. PERSONAL FORM -->
+        <div class="panel" id="personalPanel">
+          <div class="panel-header">
+            <div class="panel-title">👤 ব্যক্তিগত এন্ট্রি</div>
+          </div>
+
+          <form id="personalForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label>ধরন</label>
+                <select id="persType">
+                  <option value="expense">খরচ (Expense)</option>
+                  <option value="income">আয় (Income)</option>
+                  <option value="pending">পেন্ডিং (Pending)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>মাধ্যম</label>
+                <select id="persAccount" required></select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>টাকার পরিমাণ</label>
+                <input type="number" id="persAmount" placeholder="0.00" required min="1" step="any" />
+              </div>
+              <div class="form-group">
+                <label>তারিখ</label>
+                <input type="date" id="persDate" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>বিবরণ</label>
+              <input type="text" id="persDesc" placeholder="যেমন: বাজার খরচ, যাতায়াত..." required />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">যোগ করুন</button>
+          </form>
+        </div>
+
+        <!-- 2. CREATE PROJECT FORM -->
+        <div class="panel" id="projectPanel" style="display: none;">
+          <div class="panel-header">
+            <div class="panel-title">📁 নতুন প্রজেক্ট তৈরি</div>
+          </div>
+
+          <form id="createProjectForm">
+            <div class="form-group">
+              <label>প্রজেক্টের নাম</label>
+              <input type="text" id="newProjName" placeholder="যেমন: ক্লায়েন্ট ওয়েবসাইট, ফার্নিচার..." required autocomplete="off" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">প্রজেক্ট শুরু করুন</button>
+          </form>
+        </div>
+
+        <!-- 3. ADD NEW ACCOUNT FORM -->
+        <div class="panel" id="accountPanel" style="display: none;">
+          <div class="panel-header">
+            <div class="panel-title">💳 নতুন মাধ্যম যোগ</div>
+          </div>
+
+          <form id="addAccountForm">
+            <div class="form-group">
+              <label>মাধ্যমের নাম</label>
+              <input type="text" id="newAccountName" placeholder="যেমন: রকেট, উপায়, ব্যাংক..." required autocomplete="off" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">মাধ্যম সেভ করুন</button>
+          </form>
+        </div>
+
+        <!-- RECENT PERSONAL LIST -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">ব্যক্তিগত লেনদেন তালিকা</div>
+          </div>
+          <div class="tx-scroll" id="personalList"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: PROJECTS LIST -->
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">📁 প্রজেক্ট সমূহ</div>
+          </div>
+          <div id="projectsContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GOOGLE SHEETS MANAGEMENT -->
+  <div class="modal-backdrop" id="sheetsModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>📊 Google Sheets সিঙ্ক ও ব্যাকআপ</h3>
+        <button type="button" class="modal-close" onclick="closeSheetsModal()">×</button>
+      </div>
+
+      <div class="form-group">
+        <label>কানেক্টেড Web App URL</label>
+        <input type="url" id="sheetsScriptUrl" readonly style="background:#f1f5f9; cursor:not-allowed;" />
+        <small style="color:var(--success); font-weight:600; font-size:11.5px; display:block; margin-top:4px;">
+          ✓ আপনার গুগল শিট সাফল্যের সাথে কানেক্ট করা আছে।
+        </small>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+        <button type="button" class="btn btn-sheet" id="btnExportSheets" onclick="exportAllToSheets()">
+          📤 সব হিসাব গুগল শিটে ব্যাকআপ পাঠান
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="closeSheetsModal()">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DIRECT BUILT-IN CLOUD SYNC -->
+  <div class="modal-backdrop" id="cloudModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>☁️ ক্লাউড অটো ব্যাকআপ ও সিঙ্ক</h3>
+        <button type="button" class="modal-close" onclick="closeCloudModal()">×</button>
+      </div>
+
+      <div class="form-group">
+        <label>আপনার গোপন ক্লাউড পিন (Secret PIN)</label>
+        <input type="text" id="cloudPinInput" placeholder="যেকোনো ৪-৮ সংখ্যার পিন দিন (যেমন: 1234)" />
+        <small style="color:var(--muted); font-size:11.5px; display:block; margin-top:4px;">এই পিনটি মনে রাখুন। অন্য যেকোনো ফোনে এই পিন দিয়ে আপনার হিসাব নামাতে পারবেন।</small>
+      </div>
+
+      <div style="display: flex; flex-direction:column; gap:8px; margin-top:14px;">
+        <button type="button" class="btn btn-cloud" id="btnCloudPush" onclick="syncToCloud()">☁️ ক্লাউডে ব্যাকআপ পাঠান (Upload)</button>
+        <button type="button" class="btn btn-secondary" id="btnCloudPull" onclick="syncFromCloud()">🔄 ক্লাউড থেকে ডেটা নামান (Download)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT ENTRY INSIDE SPECIFIC PROJECT -->
+  <div class="modal-backdrop" id="projectModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalProjectTitle">প্রজেক্টে এন্ট্রি</h3>
+        <button type="button" class="modal-close" onclick="closeModal()">×</button>
+      </div>
+
+      <form id="projEntryForm">
+        <input type="hidden" id="modalProjectId" />
+        <input type="hidden" id="modalTxId" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>ধরন</label>
+            <select id="modalTxType">
+              <option value="income">আয় / বাজেট (Income)</option>
+              <option value="expense">প্রজেক্ট খরচ (Expense)</option>
+              <option value="pending">পেন্ডিং / পাওনা (Pending)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>মাধ্যম</label>
+            <select id="modalTxAccount" required></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>পরিমাণ (টাকা)</label>
+            <input type="number" id="modalTxAmount" placeholder="0.00" required min="1" step="any" />
+          </div>
+          <div class="form-group">
+            <label>তারিখ</label>
+            <input type="date" id="modalTxDate" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>বিবরণ</label>
+          <input type="text" id="modalTxDesc" placeholder="যেমন: মালামাল কেনা..." required />
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 14px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal()">বাতিল</button>
+          <button type="submit" class="btn btn-success" style="flex:2;" id="modalSubmitBtn">সেভ করুন</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT PERSONAL TRANSACTION -->
+  <div class="modal-backdrop" id="personalEditModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>ব্যক্তিগত লেনদেন এডিট</h3>
+        <button type="button" class="modal-close" onclick="closePersonalEditModal()">×</button>
+      </div>
+
+      <form id="personalEditForm">
+        <input type="hidden" id="editPersId" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>ধরন</label>
+            <select id="editPersType">
+              <option value="expense">খরচ (Expense)</option>
+              <option value="income">আয় (Income)</option>
+              <option value="pending">পেন্ডিং (Pending)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>মাধ্যম</label>
+            <select id="editPersAccount" required></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>পরিমাণ (টাকা)</label>
+            <input type="number" id="editPersAmount" placeholder="0.00" required min="1" step="any" />
+          </div>
+          <div class="form-group">
+            <label>তারিখ</label>
+            <input type="date" id="editPersDate" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>বিবরণ</label>
+          <input type="text" id="editPersDesc" required />
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 14px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closePersonalEditModal()">বাতিল</button>
+          <button type="submit" class="btn btn-primary" style="flex:2;">আপডেট</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DATE-TO-DATE PRINT / PREVIEW REPORT -->
+  <div class="modal-backdrop" id="printReportModal">
+    <div class="modal-box" style="max-width: 520px;">
+      <div class="modal-head">
+        <h3>📅 রিপোর্ট তৈরি ও প্রিন্ট</h3>
+        <button type="button" class="modal-close" onclick="closePrintModal()">×</button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>শুরুর তারিখ (From)</label>
+          <input type="date" id="reportStartDate" onchange="generateReportPreview()" />
+        </div>
+        <div class="form-group">
+          <label>শেষের তারিখ (To)</label>
+          <input type="date" id="reportEndDate" onchange="generateReportPreview()" />
+        </div>
+      </div>
+
+      <div class="preview-summary" id="previewSummaryBox">
+        <div>মোট আয়: <strong id="repIncome" style="color:var(--success);">৳ 0.00</strong></div>
+        <div>মোট ব্যয়: <strong id="repExpense" style="color:var(--danger);">৳ 0.00</strong></div>
+        <div>পেন্ডিং: <strong id="repPending" style="color:var(--warning);">৳ 0.00</strong></div>
+        <div>নিট লাভ/ক্ষতি: <strong id="repNet" style="color:var(--primary);">৳ 0.00</strong></div>
+      </div>
+
+      <div style="font-size: 12.5px; font-weight:700; margin-bottom:6px; color:var(--muted);">লেনদেন প্রিভিউ:</div>
+      <div class="table-wrap" style="max-height: 200px; overflow-y:auto; margin-bottom: 14px; border:1px solid var(--border); border-radius:8px;">
+        <table class="proj-tx-table">
+          <thead>
+            <tr>
+              <th>তারিখ</th>
+              <th>সেকশন</th>
+              <th>বিবরণ</th>
+              <th>পরিমাণ</th>
+            </tr>
+          </thead>
+          <tbody id="reportPreviewTbody"></tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closePrintModal()">বন্ধ করুন</button>
+        <button type="button" class="btn btn-primary" style="flex:2;" onclick="triggerDateRangePrint()">🖨️ প্রিন্ট / PDF সংরক্ষণ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIDDEN PRINT SHEET -->
+  <div id="printReportSection">
+    <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px;">
+      <h2 style="font-size: 24px; margin-bottom: 4px;">FundFlow আর্থিক হিসাব বিবরণী</h2>
+      <p id="printDateRangeHeader" style="font-size: 14px; color: #555;"></p>
+    </div>
+    <div id="printReportContent"></div>
+  </div>
+
+  <script>
+    // আপনার দেওয়া Google Apps Script Web App URL
+    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbydnVCVUHlzoZccBvq9mMG7lUQsKsmtk6dsflQhumplkQ9IeIbw4t576N7b7z3t7Keg/exec";
+
+    let accounts = JSON.parse(localStorage.getItem('my_accounts_list')) || ['হ্যান্ড ক্যাশ', 'বিকাশ', 'নগদ', 'ব্যাংক'];
+    let personalTx = JSON.parse(localStorage.getItem('my_personal_tx')) || [];
+    let projects = JSON.parse(localStorage.getItem('my_projects_data')) || [];
+    let userCloudPin = localStorage.getItem('fundflow_cloud_pin') || '';
+    let isEditMode = false;
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('persDate').value = todayStr;
+    document.getElementById('modalTxDate').value = todayStr;
+
+    // Elements
+    const addAccountForm = document.getElementById('addAccountForm');
+    const personalForm = document.getElementById('personalForm');
+    const personalEditForm = document.getElementById('personalEditForm');
+    const createProjectForm = document.getElementById('createProjectForm');
+    const projEntryForm = document.getElementById('projEntryForm');
+    const personalList = document.getElementById('personalList');
+    const projectsContainer = document.getElementById('projectsContainer');
+    const accountSummary = document.getElementById('accountSummary');
+
+    const totalNetBalanceEl = document.getElementById('totalNetBalance');
+    const totalExpenseEl = document.getElementById('totalExpense');
+    const totalPendingEl = document.getElementById('totalPending');
+    const totalProjectProfitEl = document.getElementById('totalProjectProfit');
+    const expenseSub = document.getElementById('expenseSub');
+    const pendingSub = document.getElementById('pendingSub');
+
+    // GOOGLE SHEETS FUNCTIONS
+    function openSheetsModal() {
+      document.getElementById('sheetsScriptUrl').value = GOOGLE_SHEETS_URL;
+      document.getElementById('sheetsModal').style.display = 'flex';
+    }
+
+    function closeSheetsModal() {
+      document.getElementById('sheetsModal').style.display = 'none';
+    }
+
+    async function sendEntryToSheet(entry) {
+      if (!GOOGLE_SHEETS_URL) return;
+      try {
+        await fetch(GOOGLE_SHEETS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add_entry', ...entry })
+        });
+      } catch (err) {
+        console.warn('Google Sheets sync error:', err);
+      }
+    }
+
+    async function exportAllToSheets() {
+      const btn = document.getElementById('btnExportSheets');
+      btn.innerText = 'পাঠানো হচ্ছে...';
+      btn.disabled = true;
+
+      const payload = {
+        accounts,
+        personalTx,
+        projects,
+        exportDate: new Date().toISOString()
+      };
+
+      try {
+        await fetch(GOOGLE_SHEETS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'sync_all', payload })
+        });
+        alert('আপনার সব হিসাব সফলভাবে গুগল শিটে ব্যাকআপ পাঠানো হয়েছে!');
+        closeSheetsModal();
+      } catch (err) {
+        alert('গুগল শিটে পাঠাতে সমস্যা হয়েছে। ইন্টারনেট সংযোগ চেক করুন।');
+      } finally {
+        btn.innerText = '📤 সব হিসাব গুগল শিটে ব্যাকআপ পাঠান';
+        btn.disabled = false;
+      }
+    }
+
+    // CLOUD SYNC SYSTEM (KV Storage API)
+    function openCloudModal() {
+      document.getElementById('cloudPinInput').value = userCloudPin;
+      document.getElementById('cloudModal').style.display = 'flex';
+    }
+
+    function closeCloudModal() {
+      document.getElementById('cloudModal').style.display = 'none';
+    }
+
+    async function syncToCloud() {
+      const pin = document.getElementById('cloudPinInput').value.trim();
+      if (!pin || pin.length < 3) {
+        alert('অনুগ্রহ করে অন্তত ৩-৪ ডিজিটের একটি পিন দিন!');
+        return;
+      }
+
+      userCloudPin = pin;
+      localStorage.setItem('fundflow_cloud_pin', pin);
+
+      const payload = {
+        accounts,
+        personalTx,
+        projects,
+        lastUpdated: new Date().toISOString()
+      };
+
+      const btn = document.getElementById('btnCloudPush');
+      btn.innerText = 'আপলোড হচ্ছে...';
+      btn.disabled = true;
+
+      try {
+        await fetch(`https://api.counterapi.dev/v1/fundflow_backup/pin_${encodeURIComponent(pin)}/set?count=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(payload)))))}`);
+        
+        await fetch(`https://kvdb.io/4y9nQeL8L3h5A1z8aK3m9B/fundflow_${encodeURIComponent(pin)}`, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+
+        alert(`সফল হয়েছে! আপনার পিন: [ ${pin} ]\n\nক্লাউডে সব ডেটা সংরক্ষিত হয়েছে।`);
+      } catch (err) {
+        alert('ক্লাউডে পাঠাতে সমস্যা হয়েছে। ইন্টারনেট সংযোগ চেক করুন।');
+      } finally {
+        btn.innerText = '☁️ ক্লাউডে ব্যাকআপ পাঠান (Upload)';
+        btn.disabled = false;
+      }
+    }
+
+    async function syncFromCloud() {
+      const pin = document.getElementById('cloudPinInput').value.trim();
+      if (!pin) {
+        alert('অনুগ্রহ করে আপনার পিন লিখুন!');
+        return;
+      }
+
+      const btn = document.getElementById('btnCloudPull');
+      btn.innerText = 'নামানো হচ্ছে...';
+      btn.disabled = true;
+
+      try {
+        let loadedData = null;
+
+        try {
+          const res = await fetch(`https://kvdb.io/4y9nQeL8L3h5A1z8aK3m9B/fundflow_${encodeURIComponent(pin)}`);
+          if (res.ok) {
+            loadedData = await res.json();
+          }
+        } catch(e) {}
+
+        if (!loadedData) {
+          const res2 = await fetch(`https://api.counterapi.dev/v1/fundflow_backup/pin_${encodeURIComponent(pin)}`);
+          if (res2.ok) {
+            const data2 = await res2.json();
+            if (data2 && data2.count) {
+              loadedData = JSON.parse(decodeURIComponent(escape(atob(data2.count))));
+            }
+          }
+        }
+
+        if (loadedData && Array.isArray(loadedData.accounts) && Array.isArray(loadedData.personalTx) && Array.isArray(loadedData.projects)) {
+          if (confirm('ক্লাউডে ব্যাকআপ পাওয়া গেছে! আপনি কি এই ডেটা দিয়ে আপনার অ্যাপ আপডেট করতে চান?')) {
+            accounts = loadedData.accounts;
+            personalTx = loadedData.personalTx;
+            projects = loadedData.projects;
+            userCloudPin = pin;
+            localStorage.setItem('fundflow_cloud_pin', pin);
+            saveData();
+            render();
+            closeCloudModal();
+            alert('সফলভাবে ক্লাউড থেকে সব হিসাব আপডেট হয়েছে!');
+          }
+        } else {
+          alert('এই পিনের আন্ডারে ক্লাউডে কোনো ডেটা পাওয়া যায়নি!');
+        }
+      } catch (err) {
+        alert('ডেটা নামাতে সমস্যা হয়েছে। পিন বা ইন্টারনেট সংযোগ চেক করুন।');
+      } finally {
+        btn.innerText = '🔄 ক্লাউড থেকে ডেটা নামান (Download)';
+        btn.disabled = false;
+      }
+    }
+
+    // FACTORY RESET
+    function factoryResetApp() {
+      const confirmReset = confirm("⚠️ সতর্কবার্তা: আপনি কি নিশ্চিতভাবে সমস্ত ডেটা মুছে ফ্যাক্টরি রিসেট করতে চান?\n\nআপনার সমস্ত ব্যক্তিগত হিসাব ও প্রজেক্ট মুছে যাবে।");
+      if (confirmReset) {
+        const doubleConfirm = prompt("নিশ্চিত করতে বড় হাতের অক্ষরে 'RESET' টাইপ করুন:");
+        if (doubleConfirm === "RESET") {
+          localStorage.removeItem('my_accounts_list');
+          localStorage.removeItem('my_personal_tx');
+          localStorage.removeItem('my_projects_data');
+          
+          accounts = ['হ্যান্ড ক্যাশ', 'বিকাশ', 'নগদ', 'ব্যাংক'];
+          personalTx = [];
+          projects = [];
+          saveData();
+          toggleEditMode();
+          render();
+          alert("সকল হিসাব মুছে অ্যাপটি সম্পূর্ণ নতুন অবস্থায় রিসেট করা হয়েছে।");
+        } else {
+          alert("রিসেট বাতিল করা হয়েছে।");
+        }
+      }
+    }
+
+    // EDIT MODE TOGGLE
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const body = document.body;
+      const btn = document.getElementById('editModeBtn');
+      const label = document.getElementById('editModeLabel');
+
+      if (isEditMode) {
+        body.classList.add('edit-mode-active');
+        btn.classList.add('active');
+        label.innerText = 'এডিট মোড: চালু';
+      } else {
+        body.classList.remove('edit-mode-active');
+        btn.classList.remove('active');
+        label.innerText = 'এডিট মোড: বন্ধ';
+      }
+    }
+
+    function switchLeftTab(tab) {
+      document.getElementById('tabBtnPersonal').classList.remove('active');
+      document.getElementById('tabBtnProject').classList.remove('active');
+      document.getElementById('tabBtnAccount').classList.remove('active');
+
+      document.getElementById('personalPanel').style.display = 'none';
+      document.getElementById('projectPanel').style.display = 'none';
+      document.getElementById('accountPanel').style.display = 'none';
+
+      if (tab === 'personal') {
+        document.getElementById('tabBtnPersonal').classList.add('active');
+        document.getElementById('personalPanel').style.display = 'block';
+      } else if (tab === 'project') {
+        document.getElementById('tabBtnProject').classList.add('active');
+        document.getElementById('projectPanel').style.display = 'block';
+      } else if (tab === 'account') {
+        document.getElementById('tabBtnAccount').classList.add('active');
+        document.getElementById('accountPanel').style.display = 'block';
+      }
+    }
+
+    addAccountForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const accInput = document.getElementById('newAccountName');
+      const accName = accInput.value.trim();
+      if (!accName) return;
+
+      if (!accounts.includes(accName)) {
+        accounts.push(accName);
+        saveData();
+        accInput.value = '';
+        render();
+        switchLeftTab('personal');
+      } else {
+        alert('এই মাধ্যমটি ইতিমধ্যে রয়েছে!');
+      }
+    });
+
+    function deleteAccount(accName) {
+      if (confirm(`আপনি কি "${accName}" মাধ্যমটি মুছে ফেলতে চান?`)) {
+        accounts = accounts.filter(a => a !== accName);
+        saveData();
+        render();
+      }
+    }
+
+    createProjectForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const projInput = document.getElementById('newProjName');
+      const name = projInput.value.trim();
+      if (!name) return;
+
+      const newProj = {
+        id: Date.now(),
+        name: name,
+        createdDate: new Date().toLocaleDateString('bn-BD'),
+        transactions: []
+      };
+
+      projects.unshift(newProj);
+      saveData();
+      projInput.value = '';
+      render();
+      switchLeftTab('personal');
+    });
+
+    function editProjectName(projId) {
+      const proj = projects.find(p => p.id === projId);
+      if (!proj) return;
+      const newName = prompt('প্রজেক্টের নতুন নাম লিখুন:', proj.name);
+      if (newName && newName.trim() !== '') {
+        proj.name = newName.trim();
+        saveData();
+        render();
+      }
+    }
+
+    personalForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const type = document.getElementById('persType').value;
+      const account = document.getElementById('persAccount').value;
+      const amount = parseFloat(document.getElementById('persAmount').value);
+      const date = document.getElementById('persDate').value;
+      const desc = document.getElementById('persDesc').value.trim();
+
+      personalTx.unshift({ id: Date.now(), type, account, amount, date, desc });
+      saveData();
+
+      // সরাসরি গুগল শিটে পাঠানো
+      sendEntryToSheet({ date, section: 'ব্যক্তিগত', type, account, amount, desc });
+
+      personalForm.reset();
+      document.getElementById('persDate').value = todayStr;
+      render();
+    });
+
+    function openEditPersonalTx(txId) {
+      const tx = personalTx.find(t => t.id === txId);
+      if (!tx) return;
+
+      document.getElementById('editPersId').value = tx.id;
+      document.getElementById('editPersType').value = tx.type;
+      document.getElementById('editPersAmount').value = tx.amount;
+      document.getElementById('editPersDate').value = tx.date;
+      document.getElementById('editPersDesc').value = tx.desc;
+
+      const accSelect = document.getElementById('editPersAccount');
+      accSelect.innerHTML = '';
+      accounts.forEach(acc => { accSelect.innerHTML += `<option value="${acc}">${acc}</option>`; });
+      accSelect.value = tx.account;
+
+      document.getElementById('personalEditModal').style.display = 'flex';
+    }
+
+    function closePersonalEditModal() {
+      document.getElementById('personalEditModal').style.display = 'none';
+      personalEditForm.reset();
+    }
+
+    personalEditForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id = Number(document.getElementById('editPersId').value);
+      const tx = personalTx.find(t => t.id === id);
+      if (!tx) return;
+
+      tx.type = document.getElementById('editPersType').value;
+      tx.account = document.getElementById('editPersAccount').value;
+      tx.amount = parseFloat(document.getElementById('editPersAmount').value);
+      tx.date = document.getElementById('editPersDate').value;
+      tx.desc = document.getElementById('editPersDesc').value.trim();
+
+      saveData();
+      closePersonalEditModal();
+      render();
+    });
+
+    function openProjectModal(projectId) {
+      const proj = projects.find(p => p.id === projectId);
+      if (!proj) return;
+      projEntryForm.reset();
+      document.getElementById('modalProjectId').value = proj.id;
+      document.getElementById('modalTxId').value = '';
+      document.getElementById('modalProjectTitle').innerText = `${proj.name} — নতুন এন্ট্রি`;
+      document.getElementById('modalSubmitBtn').innerText = 'সেভ করুন';
+      document.getElementById('modalTxDate').value = todayStr;
+      document.getElementById('projectModal').style.display = 'flex';
+    }
+
+    function openEditProjectTx(projectId, txId) {
+      const proj = projects.find(p => p.id === projectId);
+      if (!proj) return;
+      const tx = proj.transactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      document.getElementById('modalProjectId').value = proj.id;
+      document.getElementById('modalTxId').value = tx.id;
+      document.getElementById('modalProjectTitle').innerText = `${proj.name} — এন্ট্রি এডিট`;
+      document.getElementById('modalSubmitBtn').innerText = 'আপডেট করুন';
+
+      document.getElementById('modalTxType').value = tx.type;
+      document.getElementById('modalTxAccount').value = tx.account;
+      document.getElementById('modalTxAmount').value = tx.amount;
+      document.getElementById('modalTxDate').value = tx.date;
+      document.getElementById('modalTxDesc').value = tx.desc;
+
+      document.getElementById('projectModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('projectModal').style.display = 'none';
+      projEntryForm.reset();
+    }
+
+    window.onclick = function(event) {
+      if (event.target === document.getElementById('projectModal')) closeModal();
+      if (event.target === document.getElementById('personalEditModal')) closePersonalEditModal();
+      if (event.target === document.getElementById('printReportModal')) closePrintModal();
+      if (event.target === document.getElementById('cloudModal')) closeCloudModal();
+      if (event.target === document.getElementById('sheetsModal')) closeSheetsModal();
+    };
+
+    projEntryForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const projId = Number(document.getElementById('modalProjectId').value);
+      const txId = document.getElementById('modalTxId').value;
+      const proj = projects.find(p => p.id === projId);
+      if (!proj) return;
+
+      const type = document.getElementById('modalTxType').value;
+      const account = document.getElementById('modalTxAccount').value;
+      const amount = parseFloat(document.getElementById('modalTxAmount').value);
+      const date = document.getElementById('modalTxDate').value;
+      const desc = document.getElementById('modalTxDesc').value.trim();
+
+      if (txId) {
+        const tx = proj.transactions.find(t => t.id === Number(txId));
+        if (tx) { Object.assign(tx, { type, account, amount, date, desc }); }
+      } else {
+        proj.transactions.unshift({ id: Date.now(), type, account, amount, date, desc });
+        // নতুন প্রজেক্ট এন্ট্রি সরাসরি গুগল শিটে পাঠানো
+        sendEntryToSheet({ date, section: proj.name, type, account, amount, desc });
+      }
+
+      saveData();
+      closeModal();
+      render();
+    });
+
+    function deletePersonalTx(id) {
+      if (confirm('এই এন্ট্রিটি মুছে ফেলতে চান?')) {
+        personalTx = personalTx.filter(item => item.id !== id);
+        saveData();
+        render();
+      }
+    }
+
+    function deleteProjectTx(projId, txId) {
+      if (confirm('এই লেনদেনটি মুছে ফেলতে চান?')) {
+        const proj = projects.find(p => p.id === projId);
+        if (proj) {
+          proj.transactions = proj.transactions.filter(t => t.id !== txId);
+          saveData();
+          render();
+        }
+      }
+    }
+
+    function deleteProject(projId) {
+      if (confirm('সম্পূর্ণ প্রজেক্ট এবং এর সব হিসাব মুছে ফেলতে চান?')) {
+        projects = projects.filter(p => p.id !== projId);
+        saveData();
+        render();
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('my_accounts_list', JSON.stringify(accounts));
+      localStorage.setItem('my_personal_tx', JSON.stringify(personalTx));
+      localStorage.setItem('my_projects_data', JSON.stringify(projects));
+    }
+
+    function formatMoney(amount) {
+      return '৳ ' + Number(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // DATE-TO-DATE PRINT SYSTEM
+    function openPrintModal() {
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      const today = now.toISOString().split('T')[0];
+
+      document.getElementById('reportStartDate').value = firstDay;
+      document.getElementById('reportEndDate').value = today;
+
+      generateReportPreview();
+      document.getElementById('printReportModal').style.display = 'flex';
+    }
+
+    function closePrintModal() {
+      document.getElementById('printReportModal').style.display = 'none';
+    }
+
+    function getFilteredRecords(start, end) {
+      const list = [];
+      const s = start ? new Date(start) : new Date('2000-01-01');
+      const e = end ? new Date(end) : new Date('2100-01-01');
+
+      personalTx.forEach(t => {
+        const d = new Date(t.date);
+        if (d >= s && d <= e) {
+          list.push({ ...t, section: 'ব্যক্তিগত' });
+        }
+      });
+
+      projects.forEach(p => {
+        p.transactions.forEach(t => {
+          const d = new Date(t.date);
+          if (d >= s && d <= e) {
+            list.push({ ...t, section: p.name });
+          }
+        });
+      });
+
+      list.sort((a, b) => new Date(b.date) - new Date(a.date));
+      return list;
+    }
+
+    function generateReportPreview() {
+      const start = document.getElementById('reportStartDate').value;
+      const end = document.getElementById('reportEndDate').value;
+      const records = getFilteredRecords(start, end);
+
+      let income = 0, expense = 0, pending = 0;
+      const tbody = document.getElementById('reportPreviewTbody');
+      tbody.innerHTML = '';
+
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:12px;">এই সময়সীমায় কোনো লেনদেন পাওয়া যায়নি</td></tr>`;
+      } else {
+        records.forEach(r => {
+          if (r.type === 'income') income += r.amount;
+          else if (r.type === 'expense') expense += r.amount;
+          else if (r.type === 'pending') pending += r.amount;
+
+          const color = r.type === 'income' ? 'var(--success)' : (r.type === 'expense' ? 'var(--danger)' : 'var(--warning)');
+          const sign = r.type === 'income' ? '+' : (r.type === 'expense' ? '-' : '⌛');
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${r.date}</td>
+              <td><span class="tag-badge">${r.section}</span></td>
+              <td>${r.desc}</td>
+              <td style="font-weight:700; color:${color};">${sign} ${formatMoney(r.amount)}</td>
+            </tr>
+          `;
+        });
+      }
+
+      document.getElementById('repIncome').textContent = formatMoney(income);
+      document.getElementById('repExpense').textContent = formatMoney(expense);
+      document.getElementById('repPending').textContent = formatMoney(pending);
+      
+      const net = income - expense;
+      const netEl = document.getElementById('repNet');
+      netEl.textContent = formatMoney(net);
+      netEl.style.color = net >= 0 ? 'var(--primary)' : 'var(--danger)';
+    }
+
+    function triggerDateRangePrint() {
+      const start = document.getElementById('reportStartDate').value;
+      const end = document.getElementById('reportEndDate').value;
+      const records = getFilteredRecords(start, end);
+
+      let income = 0, expense = 0, pending = 0;
+      let rows = '';
+
+      records.forEach(r => {
+        if (r.type === 'income') income += r.amount;
+        else if (r.type === 'expense') expense += r.amount;
+        else if (r.type === 'pending') pending += r.amount;
+
+        const typeLabel = r.type === 'income' ? 'আয় (+)' : (r.type === 'expense' ? 'ব্যয় (-)' : 'বাকি (⌛)');
+
+        rows += `
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">${r.date}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${r.section}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${r.desc}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${r.account}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${typeLabel}</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right; font-weight: bold;">${formatMoney(r.amount)}</td>
+          </tr>
+        `;
+      });
+
+      const net = income - expense;
+      document.getElementById('printDateRangeHeader').innerText = `তারিখ সীমা: ${start || 'শুরু'} থেকে ${end || 'বর্তমান'}`;
+
+      document.getElementById('printReportContent').innerHTML = `
+        <div style="display: flex; justify-content: space-around; background: #f4f4f4; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd;">
+          <div>মোট আয়: <strong>${formatMoney(income)}</strong></div>
+          <div>মোট ব্যয়: <strong>${formatMoney(expense)}</strong></div>
+          <div>পেন্ডিং: <strong>${formatMoney(pending)}</strong></div>
+          <div>নিট লাভ/ক্ষতি: <strong>${formatMoney(net)}</strong></div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <thead>
+            <tr style="background: #e9e9e9;">
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">তারিখ</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">বিভাগ/প্রজেক্ট</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">বিবরণ</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">মাধ্যম</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">ধরন</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">পরিমাণ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows || '<tr><td colspan="6" style="text-align:center; padding:12px;">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td></tr>'}
+          </tbody>
+        </table>
+      `;
+
+      closePrintModal();
+      window.print();
+    }
+
+    function render() {
+      const persSelect = document.getElementById('persAccount');
+      const modalSelect = document.getElementById('modalTxAccount');
+      const prevPers = persSelect.value;
+      const prevModal = modalSelect.value;
+
+      persSelect.innerHTML = '';
+      modalSelect.innerHTML = '';
+      accounts.forEach(acc => {
+        persSelect.innerHTML += `<option value="${acc}">${acc}</option>`;
+        modalSelect.innerHTML += `<option value="${acc}">${acc}</option>`;
+      });
+      if (accounts.includes(prevPers)) persSelect.value = prevPers;
+      if (accounts.includes(prevModal)) modalSelect.value = prevModal;
+
+      const accBalances = {};
+      accounts.forEach(acc => accBalances[acc] = 0);
+
+      let personalIncome = 0, personalExpense = 0, personalPending = 0;
+      personalTx.forEach(t => {
+        if (t.type === 'income') { personalIncome += t.amount; accBalances[t.account] = (accBalances[t.account] || 0) + t.amount; }
+        else if (t.type === 'expense') { personalExpense += t.amount; accBalances[t.account] = (accBalances[t.account] || 0) - t.amount; }
+        else if (t.type === 'pending') { personalPending += t.amount; }
+      });
+
+      let totalProjectsIncome = 0, totalProjectsExpense = 0, totalProjectsPending = 0, totalProjectsNetProfit = 0;
+      projects.forEach(p => {
+        let pIncome = 0, pExpense = 0, pPending = 0;
+        p.transactions.forEach(t => {
+          if (t.type === 'income') { pIncome += t.amount; accBalances[t.account] = (accBalances[t.account] || 0) + t.amount; }
+          else if (t.type === 'expense') { pExpense += t.amount; accBalances[t.account] = (accBalances[t.account] || 0) - t.amount; }
+          else if (t.type === 'pending') { pPending += t.amount; }
+        });
+        totalProjectsIncome += pIncome;
+        totalProjectsExpense += pExpense;
+        totalProjectsPending += pPending;
+        totalProjectsNetProfit += (pIncome - pExpense);
+      });
+
+      const grandTotalBalance = (personalIncome - personalExpense) + totalProjectsNetProfit;
+      const grandTotalExpense = personalExpense + totalProjectsExpense;
+      const grandTotalPending = personalPending + totalProjectsPending;
+
+      totalNetBalanceEl.textContent = formatMoney(grandTotalBalance);
+      totalExpenseEl.textContent = formatMoney(grandTotalExpense);
+      totalPendingEl.textContent = formatMoney(grandTotalPending);
+
+      totalProjectProfitEl.textContent = formatMoney(totalProjectsNetProfit);
+      totalProjectProfitEl.style.color = totalProjectsNetProfit >= 0 ? 'var(--primary)' : 'var(--danger)';
+
+      expenseSub.innerText = `ব্যক্তিগত: ${formatMoney(personalExpense)} | প্রজেক্ট: ${formatMoney(totalProjectsExpense)}`;
+      pendingSub.innerText = `ব্যক্তিগত: ${formatMoney(personalPending)} | প্রজেক্ট: ${formatMoney(totalProjectsPending)}`;
+
+      accountSummary.innerHTML = '';
+      for (const [acc, bal] of Object.entries(accBalances)) {
+        accountSummary.innerHTML += `
+          <div class="acc-pill">
+            <span>${acc}: <strong>${formatMoney(bal)}</strong></span>
+            <button class="acc-del-btn" onclick="deleteAccount('${acc}')">×</button>
+          </div>
+        `;
+      }
+
+      personalList.innerHTML = '';
+      if (personalTx.length === 0) {
+        personalList.innerHTML = `<div style="text-align:center; padding:16px; font-size:12px; color:var(--muted);">কোনো ব্যক্তিগত লেনদেন নেই</div>`;
+      }
+      personalTx.forEach(t => {
+        let isInc = t.type === 'income';
+        let isExp = t.type === 'expense';
+        let color = isInc ? 'var(--success)' : (isExp ? 'var(--danger)' : 'var(--warning)');
+        let bg = isInc ? 'var(--success-subtle)' : (isExp ? 'var(--danger-subtle)' : 'var(--warning-subtle)');
+        let sign = isInc ? '+' : (isExp ? '-' : '⌛');
+
+        personalList.innerHTML += `
+          <div class="tx-item">
+            <div class="tx-left">
+              <div class="tx-icon-circle" style="background:${bg}; color:${color};">${isInc ? '↓' : (isExp ? '↑' : '⏳')}</div>
+              <div class="tx-details">
+                <strong>${t.desc}</strong>
+                <div class="tx-meta"><span>${t.date}</span> • <span class="tag-badge">${t.account}</span></div>
+              </div>
+            </div>
+            <div class="tx-right">
+              <span class="tx-amount" style="color:${color};">${sign} ${formatMoney(t.amount)}</span>
+              <div class="action-group">
+                <button class="action-btn-icon" onclick="openEditPersonalTx(${t.id})" title="এডিট">✏️</button>
+                <button class="action-btn-icon delete" onclick="deletePersonalTx(${t.id})" title="মুছুন">🗑️</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      projectsContainer.innerHTML = '';
+      if (projects.length === 0) {
+        projectsContainer.innerHTML = `<div style="text-align:center; padding:24px; font-size:13px; color:var(--muted);">কোনো প্রজেক্ট তৈরি করা হয়নি।</div>`;
+      }
+
+      projects.forEach(p => {
+        let pIncome = 0, pExpense = 0, pPending = 0;
+        p.transactions.forEach(t => {
+          if (t.type === 'income') pIncome += t.amount;
+          else if (t.type === 'expense') pExpense += t.amount;
+          else if (t.type === 'pending') pPending += t.amount;
+        });
+
+        const pProfit = pIncome - pExpense;
+        const profitColor = pProfit >= 0 ? 'var(--success)' : 'var(--danger)';
+        const profitLabel = pProfit >= 0 ? 'Profit (লাভ)' : 'Loss (ক্ষতি)';
+
+        let pTxRows = '';
+        if (p.transactions.length === 0) {
+          pTxRows = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:10px;">কোনো এন্ট্রি নেই</td></tr>`;
+        } else {
+          p.transactions.forEach(t => {
+            let isInc = t.type === 'income';
+            let isExp = t.type === 'expense';
+            let color = isInc ? 'var(--success)' : (isExp ? 'var(--danger)' : 'var(--warning)');
+            let sign = isInc ? '+' : (isExp ? '-' : '⌛');
+
+            pTxRows += `
+              <tr>
+                <td>${t.date}</td>
+                <td><strong>${t.desc}</strong></td>
+                <td><span class="tag-badge">${t.account}</span></td>
+                <td><span style="font-weight:700; color:${color};">${sign} ${formatMoney(t.amount)}</span></td>
+                <td style="text-align:right;">
+                  <div class="action-group">
+                    <button class="action-btn-icon" onclick="openEditProjectTx(${p.id}, ${t.id})" title="এডিট">✏️</button>
+                    <button class="action-btn-icon delete" onclick="deleteProjectTx(${p.id}, ${t.id})" title="মুছুন">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          });
+        }
+
+        projectsContainer.innerHTML += `
+          <div class="project-card">
+            <div class="project-top">
+              <div class="project-title-area">
+                <h3>📁 ${p.name}</h3>
+                <div class="action-group">
+                  <button class="action-btn-icon" onclick="editProjectName(${p.id})" title="নাম পরিবর্তন">✏️</button>
+                </div>
+              </div>
+              <div class="project-top-actions">
+                <button type="button" class="btn btn-success btn-sm" onclick="openProjectModal(${p.id})">+ এন্ট্রি</button>
+                <div class="action-group">
+                  <button type="button" class="btn btn-secondary btn-sm" style="color:var(--danger);" onclick="deleteProject(${p.id})">🗑️</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-stats-grid">
+              <div class="proj-stat-cell">
+                <span>Total Balance</span>
+                <strong style="color:var(--success);">${formatMoney(pIncome)}</strong>
+              </div>
+              <div class="proj-stat-cell">
+                <span>Total Expense</span>
+                <strong style="color:var(--danger);">${formatMoney(pExpense)}</strong>
+              </div>
+              <div class="proj-stat-cell">
+                <span>Pending</span>
+                <strong style="color:var(--warning);">${formatMoney(pPending)}</strong>
+              </div>
+              <div class="proj-stat-cell">
+                <span>${profitLabel}</span>
+                <strong style="color:${profitColor};">${formatMoney(pProfit)}</strong>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table class="proj-tx-table">
+                <thead>
+                  <tr>
+                    <th>তারিখ</th>
+                    <th>বিবরণ</th>
+                    <th>মাধ্যম</th>
+                    <th>পরিমাণ</th>
+                    <th style="text-align:right;">অ্যাকশন</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${pTxRows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
